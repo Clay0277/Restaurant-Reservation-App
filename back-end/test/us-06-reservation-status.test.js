@@ -42,6 +42,8 @@ describe("US-06 - Reservation status", () => {
           first_name: "first",
           last_name: "last",
           mobile_number: "800-555-1212",
+          reservation_date: expect.stringContaining("2025-01-01"),
+          reservation_time: expect.stringContaining("17:30"),
           people: 2,
         })
       );
@@ -247,16 +249,13 @@ describe("US-06 - Reservation status", () => {
         .first();
       tableOne = await knex("tables").orderBy("table_name").first();
     });
-
     test("does not include 'finished' reservations", async () => {
       expect(tableOne).not.toBeUndefined();
       expect(reservationOne).not.toBeUndefined();
-
       const seatResponse = await request(app)
         .put(`/tables/${tableOne.table_id}/seat`)
         .set("Accept", "application/json")
         .send({ data: { reservation_id: reservationOne.reservation_id } });
-
       expect(seatResponse.body.error).toBeUndefined();
       expect(seatResponse.status).toBe(200);
 
@@ -264,13 +263,13 @@ describe("US-06 - Reservation status", () => {
         .delete(`/tables/${tableOne.table_id}/seat`)
         .set("Accept", "application/json")
         .send({ data: { reservation_id: reservationOne.reservation_id } });
-
       expect(finishResponse.body.error).toBeUndefined();
       expect(finishResponse.status).toBe(200);
 
       const reservationsResponse = await request(app)
         .get(
-          `/reservations?date=${asDateString(reservationOne.reservation_date)}`
+        `/reservations?date=${reservationOne.reservation_date}`
+
         )
         .set("Accept", "application/json");
 
@@ -284,9 +283,3 @@ describe("US-06 - Reservation status", () => {
     });
   });
 });
-
-function asDateString(date) {
-  return `${date.getFullYear().toString(10)}-${(date.getMonth() + 1)
-    .toString(10)
-    .padStart(2, "0")}-${date.getDate().toString(10).padStart(2, "0")}`;
-}

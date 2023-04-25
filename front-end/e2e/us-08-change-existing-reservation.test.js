@@ -29,7 +29,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
     reservation = await createReservation({
       first_name: "Change",
       last_name: Date.now().toString(10),
-      mobile_number: "800-555-1616",
+      mobile_number: "555-1616",
       reservation_date: "2035-01-04",
       reservation_time: "14:00",
       people: 4,
@@ -46,7 +46,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
   describe("/dashboard page", () => {
     beforeEach(async () => {
       await page.goto(dashboardTestPath, {
-        waitUntil: "networkidle0",
+        waitUntil: "load",
       });
     });
 
@@ -94,11 +94,11 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         });
 
         await cancelButton.click();
-
+        
         await page.waitForResponse((response) => {
           return response.url().includes("/reservations?date=");
         });
-
+        
         await page.waitForTimeout(500);
 
         expect(await page.$(cancelButtonSelector)).toBeNull();
@@ -136,12 +136,12 @@ describe("US-08 - Change an existing reservation - E2E", () => {
   describe("/reservations/:reservation_id/edit page", () => {
     beforeEach(async () => {
       await page.goto(`${baseURL}/dashboard`, {
-        waitUntil: "networkidle0",
+        waitUntil: "load",
       });
       await page.goto(
         `${baseURL}/reservations/${reservation.reservation_id}/edit`,
         {
-          waitUntil: "networkidle0",
+          waitUntil: "load",
         }
       );
     });
@@ -162,7 +162,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
 
       await Promise.all([
         cancelButton.click(),
-        page.waitForNavigation({ waitUntil: "networkidle0" }),
+        page.waitForNavigation({ waitUntil: "load" }),
       ]);
 
       await page.screenshot({
