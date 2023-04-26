@@ -1,4 +1,23 @@
+.main-container{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh; 
+}
+
 .side-bar {
-  background-color: #393a44;
+  background-color: #099e33;
   min-width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+h1{
+  color: #000000;
+}
+
+@media only screen and (min-width: 768px) {
+  .main-container{
+    flex-direction: row;
+  }
 }
