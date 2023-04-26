@@ -192,10 +192,17 @@ function statusIsntFinished(req, res, next) {
 }
 
 // list reservations by date
-function list(req, res) {
-  const { data } = res.locals;
-  console.log(data);
-  res.json({ data: data });
+async function list(req, res) {
+  const { date, mobile_number } = req.query;
+  let reservations;
+  if (mobile_number) {
+    reservations = await service.find(mobile_number);
+  } else {
+    reservations = date ? await service.listByDate(date) : await service.list();
+  }
+  res.json({
+    data: reservations,
+  });
 }
 
 // creates a reservation
@@ -234,7 +241,7 @@ async function updateReservation(req, res) {
 }
 
 module.exports = {
-  list: [asyncErrorBoundary(byDateOrPhone), list],
+  list,
   create: [
     hasProperties(...REQUIRED_PROPERTIES),
     hasOnlyValidProperties(...VALID_PROPERTIES),
