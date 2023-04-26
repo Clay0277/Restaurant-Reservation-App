@@ -3,16 +3,14 @@ const knex = require("../db/connection");
 // list reservations by date, sorted by time
 
 function list() {
-  return knex('reservations')
-.select('*')
-.orderBy('reservation_time')
+  return knex("reservations").select("*").orderBy("reservation_time");
 }
 
-function listByDate(reservation_date) {
+function listByDate(reservationDate) {
   return knex("reservations")
     .select("*")
-    .where({ reservation_date })
-    .whereNot({ status: 'finished' })
+    .where({ reservation_date: reservationDate })
+    .whereNot({ status: "finished" })
     .orderBy("reservation_time");
 }
 
