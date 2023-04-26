@@ -198,7 +198,7 @@ async function list(req, res) {
   if (mobile_number) {
     reservations = await service.find(mobile_number);
   } else {
-    reservations = date ? await service.listByDate(date) : await service.list();
+    reservations = date ? await service.listByDate(new Date(date)) : await service.list();
   }
   res.json({
     data: reservations,

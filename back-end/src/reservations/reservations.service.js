@@ -13,7 +13,7 @@ function listByDate(reservation_date) {
     .select("*")
     .where({ reservation_date })
     .whereNot({ status: 'finished' })
-    .orderBy("reservations.reservation_time");
+    .orderBy("reservation_time");
 }
 
 // post a new reservation
