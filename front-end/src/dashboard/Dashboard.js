@@ -43,9 +43,15 @@ function Dashboard({ date }) {
         setDashboardError([error.message]);
       }
     }
+
     loadDashboard();
-    return () => abortController.abort();
+
+    return () => {
+      abortController.abort();
+      setReservations([]);
+    };
   }, [date]);
+
 
   // load all tables
   useEffect(() => {
@@ -61,9 +67,15 @@ function Dashboard({ date }) {
         setDashboardError([error.message]);
       }
     }
+
     loadTables();
-    return () => abortController.abort();
+
+    return () => {
+      abortController.abort();
+      setTables([]);
+    };
   }, []);
+
 
    return (
     <main>
