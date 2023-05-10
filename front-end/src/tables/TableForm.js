@@ -20,7 +20,7 @@ export default function TableForm() {
     const handleChange = ({ target }) => {
         let name = target.name;
         let value = target.value;
-
+    
         // table_name must be at least 2 characters long
         if (name === "table_name") {
             if (value.length < 2) {
@@ -29,7 +29,7 @@ export default function TableForm() {
                 setReservationsError([]);
             }
         }
-
+    
         // capacity must be a number greater than 0
         if (name === "capacity") {
             if (isNaN(value)) {
@@ -38,12 +38,13 @@ export default function TableForm() {
                 setReservationsError(["Capacity must be at least 1."]);
             } else {
                 setReservationsError([]);
+                value = parseInt(value); // convert capacity to integer
             }
         }
         // set the form state
         setForm({
             ...form,
-            [target.name]: target.value,
+            [target.name]: value,
         });
     }
 
