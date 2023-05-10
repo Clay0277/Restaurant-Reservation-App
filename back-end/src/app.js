@@ -12,7 +12,11 @@ const tablesRouter = require("./tables/tables.router");
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: 'https://starter-restaurant-reservation-frontend-ehd6.onrender.com',
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/reservations", reservationsRouter);

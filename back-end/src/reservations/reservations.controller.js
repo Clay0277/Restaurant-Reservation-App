@@ -194,7 +194,6 @@ function statusIsntFinished(req, res, next) {
 // list reservations by date
 async function list(req, res) {
   const { date, mobile_number } = req.query;
-  console.log(new Date(date), mobile_number);
   let reservations;
   if (mobile_number) {
     reservations = await service.find(mobile_number);
