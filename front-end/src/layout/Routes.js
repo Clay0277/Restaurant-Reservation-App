@@ -18,17 +18,16 @@ import Search from "../search/Search";
  */
 
 function Routes() {
-
   return (
     <Switch>
+      <Route exact={true} path="/dashboard">
+        <Dashboard date={today()} />
+      </Route>
       <Route exact={true} path="/">
         <Redirect to={"/dashboard"} />
       </Route>
       <Route exact={true} path="/reservations">
         <Redirect to={"/dashboard"} />
-      </Route>
-      <Route path="/dashboard">
-      <Dashboard date={today()} />
       </Route>
       <Route path="/reservations/new">
         <NewReservation />
