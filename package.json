@@ -52,6 +52,7 @@
     "babel-runtime": "6.26.0",
     "knex": "2.4.2",
     "minimatch": "9.0.0",
+    "moment": "2.29.4",
     "webpack": "^5.78.0"
   },
   "devDependencies": {

@@ -2,6 +2,7 @@ const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 const hasOnlyValidProperties = require("../errors/hasOnlyValidProperties");
+const moment = require("moment");
 
 const REQUIRED_PROPERTIES = [
   "first_name",
@@ -58,12 +59,10 @@ function peopleIsNumber(req, res, next) {
 // validation middleware: checks that the reservation_date & reservation_time are not in the past
 function notInPast(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
-  const reservation = new Date(`${reservation_date} PDT`).setHours(
-    reservation_time.substring(0, 2),
-    reservation_time.substring(3)
-  );
-  const now = Date.now();
-  if (reservation > now) {
+  const reservationDateTime = moment(`${reservation_date} ${reservation_time}`, 'YYYY-MM-DD HH:mm');
+  const now = moment();
+
+  if (reservationDateTime.isAfter(now)) {
     return next();
   } else {
     return next({
@@ -73,12 +72,14 @@ function notInPast(req, res, next) {
   }
 }
 
+
 // validation middleware: checks that the reservation_date is not a Tuesday
 function notTuesday(req, res, next) {
   const { reservation_date } = req.body.data;
   const date = new Date(reservation_date);
-  const day = date.getUTCDay();
-  if (day === 2) {
+  const day = date.getDay();
+  console.log("date and day are", date, day, new Date());
+  if (day === 1) {
     return next({
       status: 400,
       message: "The restaurant is closed on Tuesday.",
@@ -95,7 +96,7 @@ function duringOperatingHours(req, res, next) {
   const close = 2130;
   const reservation =
     reservation_time.substring(0, 2) + reservation_time.substring(3);
-  if (reservation > open && reservation < close) {
+  if (reservation >= open && reservation <= close) {
     return next();
   } else {
     return next({
@@ -210,6 +211,7 @@ async function list(req, res) {
 // creates a reservation
 async function create(req, res) {
   const reservation = await service.create(req.body.data);
+  console.log(reservation);
   res.status(201).json({ data: reservation });
 }
 
