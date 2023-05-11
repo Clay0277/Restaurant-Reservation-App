@@ -29,6 +29,11 @@ export default function ReservationForm({ reservation_id }) {
             reservation_id,
             abortController.status
           );
+          // modifying date format as 'yyyy-MM-dd' from the retrieved data
+          reservation.reservation_date = reservation.reservation_date.slice(
+            0,
+            10
+          );
           setForm(reservation);
         } catch (error) {
           setReservationsError([error.message]);
@@ -42,55 +47,61 @@ export default function ReservationForm({ reservation_id }) {
   const handleChange = ({ target }) => {
     const name = target.name;
     const value = target.value;
-    if(name==='people')
-    {
-       setForm({
-              ...form,
-              [name]: Number(value),
-          });
-    }
-    else{
+    console.log(`${name} ${value}`);
+    if (name === "people") {
       setForm({
-              ...form,
-              [name]: value,
-          });
+        ...form,
+        [name]: Number(value),
+      });
+    } else if (name === "reservation_date") {
+      setForm({
+        ...form,
+        [name]: value,
+      });
+    } else {
+      setForm({
+        ...form,
+        [name]: value,
+      });
     }
-  }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const abortController = new AbortController();
-    // POST request (new reservation)
+    if (form.people > 6 || form.people < 1) {
+      setReservationsError([
+        ...reservationsError,
+        "Number of people must be within table capacity.",
+      ]);
+      return;
+    }
     if (!reservation_id) {
       async function postData() {
         try {
           await postReservation(form, abortController.signal);
+          setReservationsError([]); // add this line
           history.push(`/dashboard?date=${form.reservation_date}`);
         } catch (error) {
           setReservationsError([...reservationsError, error.message]);
         }
       }
-      // do not send POST request if there is a pending error message
-      if (reservationsError.length === 0) {
-        postData();
-      }
+      postData();
     }
-    // PUT request (edit reservation)
     if (reservation_id) {
       async function putData() {
         try {
-          setReservationsError([]);
           await putReservation(form, abortController.signal);
+          setReservationsError([]); // add this line
           history.push(`/dashboard?date=${form.reservation_date}`);
         } catch (error) {
           setReservationsError([...reservationsError, error.message]);
         }
       }
-      // do not send PUT request if there is a pending error message
-      if (reservationsError.length === 0) {
-        putData();
-      }
+      putData();
     }
   };
+
   return (
     <>
       <ErrorAlert error={reservationsError} />
@@ -125,9 +136,10 @@ export default function ReservationForm({ reservation_id }) {
           <label htmlFor="mobile_number">Mobile Phone Number</label>
           <input
             className="form-control"
-            type="text"
+            type="tel"
             name="mobile_number"
             id="mobile_number"
+            pattern="[0-9]{3}-?[0-9]{3}-?[0-9]{4}"
             placeholder="555-555-5555"
             onChange={handleChange}
             required="required"

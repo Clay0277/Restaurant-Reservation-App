@@ -23,7 +23,7 @@ const VALID_PROPERTIES = [
 
 // validation middleware: checks that reservation_date has a valid date value
 function dateIsValid(req, res, next) {
-  if (Date.parse(req.body.data.reservation_date)) {
+  if (moment(req.body.data.reservation_date, "YYYY-MM-DD", true).isValid()) {
     next();
   } else {
     next({
@@ -45,8 +45,7 @@ function timeIsValid(req, res, next) {
 function peopleIsNumber(req, res, next) {
   const { people } = req.body.data;
   const peopleInt = parseInt(people);
-  const partySize = Number.isInteger(peopleInt);
-  if (partySize) {
+  if (!isNaN(peopleInt)) {
     return next();
   } else {
     return next({
@@ -59,7 +58,10 @@ function peopleIsNumber(req, res, next) {
 // validation middleware: checks that the reservation_date & reservation_time are not in the past
 function notInPast(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
-  const reservationDateTime = moment(`${reservation_date} ${reservation_time}`, 'YYYY-MM-DD HH:mm');
+  const reservationDateTime = moment(
+    `${reservation_date} ${reservation_time}`,
+    "YYYY-MM-DD HH:mm"
+  );
   const now = moment();
 
   if (reservationDateTime.isAfter(now)) {
@@ -71,7 +73,6 @@ function notInPast(req, res, next) {
     });
   }
 }
-
 
 // validation middleware: checks that the reservation_date is not a Tuesday
 function notTuesday(req, res, next) {
@@ -90,13 +91,14 @@ function notTuesday(req, res, next) {
 }
 
 // validation middleware: checks that the reservation_time is during operating hours
+
 function duringOperatingHours(req, res, next) {
   const { reservation_time } = req.body.data;
+  const reservation_date = req.body.data.reservation_date;
+  const reservationTimeInt = parseInt(reservation_time.replace(":", ""));
   const open = 1030;
   const close = 2130;
-  const reservation =
-    reservation_time.substring(0, 2) + reservation_time.substring(3);
-  if (reservation >= open && reservation <= close) {
+  if (reservationTimeInt >= open && reservationTimeInt <= close) {
     return next();
   } else {
     return next({
