@@ -64,7 +64,12 @@ function notInPast(req, res, next) {
   );
   const now = moment();
 
-  if (reservationDateTime.isAfter(now)) {
+  if (
+    reservationDateTime.isSame(now, "day") &&
+    reservationDateTime.isAfter(now)
+  ) {
+    return next();
+  } else if (reservationDateTime.isAfter(now)) {
     return next();
   } else {
     return next({
@@ -73,6 +78,7 @@ function notInPast(req, res, next) {
     });
   }
 }
+
 
 // validation middleware: checks that the reservation_date is not a Tuesday
 function notTuesday(req, res, next) {
